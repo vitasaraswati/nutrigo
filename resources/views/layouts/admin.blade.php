@@ -7,64 +7,67 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-gray-100 min-h-screen" x-data>
-<div class="flex h-screen overflow-hidden">
+<body class="min-h-screen bg-[#f5f0e8] text-slate-700" x-data>
+@php
+    $adminNav = [
+        ['route'=>'admin.dashboard', 'label'=>'Dashboard'],
+        ['route'=>'admin.users.index', 'label'=>'Users'],
+        ['route'=>'admin.foods.index', 'label'=>'Makanan'],
+        ['route'=>'admin.articles.index', 'label'=>'Artikel'],
+    ];
 
-    {{-- ADMIN SIDEBAR --}}
-    <aside class="w-64 bg-gray-900 flex-shrink-0 flex flex-col">
-        <div class="p-6 border-b border-gray-700">
-            <span class="text-white font-extrabold text-xl">nutri<span class="text-ng-yellow">Go</span></span>
-            <span class="ml-2 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">ADMIN</span>
-        </div>
+    $avatarInitial = strtoupper(substr(auth()->user()->name ?? 'A', 0, 1));
+@endphp
 
-        <nav class="flex-1 py-4">
-            @php
-                $adminNav = [
-                    ['route'=>'admin.dashboard',       'icon'=>'📊', 'label'=>'Dashboard'],
-                    ['route'=>'admin.users.index',      'icon'=>'👥', 'label'=>'Kelola User'],
-                    ['route'=>'admin.foods.index',      'icon'=>'🥗', 'label'=>'Data Makanan'],
-                    ['route'=>'admin.articles.index',   'icon'=>'📰', 'label'=>'Artikel'],
-                ];
-            @endphp
-            @foreach($adminNav as $item)
-                <a href="{{ route($item['route']) }}"
-                   class="flex items-center gap-3 px-5 py-3 text-sm transition-all
-                          {{ request()->routeIs($item['route']) ? 'bg-orange-500 text-white font-semibold' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
-                    <span>{{ $item['icon'] }}</span><span>{{ $item['label'] }}</span>
+<div class="relative min-h-screen overflow-x-hidden">
+    <div class="pointer-events-none absolute -left-16 top-20 h-56 w-56 rounded-full bg-[#9abc05]/40 blur-3xl"></div>
+    <div class="pointer-events-none absolute -right-16 bottom-20 h-56 w-56 rounded-full bg-[#f1c926]/45 blur-3xl"></div>
+
+    <header class="fixed left-0 right-0 top-0 z-40 border-b border-[#e8dcc8] bg-[#f3e8cc]/95 backdrop-blur">
+        <div class="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center gap-8">
+                <a href="{{ route('admin.dashboard') }}" class="text-xl font-extrabold tracking-tight text-[#d52518]">
+                    NutriGo <span class="text-[#185420]">Admin</span>
                 </a>
-            @endforeach
-        </nav>
 
-        <div class="p-4 border-t border-gray-700">
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button class="text-gray-400 hover:text-white text-sm flex items-center gap-2">
-                    🚪 Logout
-                </button>
-            </form>
-        </div>
-    </aside>
+                <nav class="hidden items-center gap-5 md:flex">
+                    @foreach($adminNav as $item)
+                        <a href="{{ route($item['route']) }}"
+                           class="border-b-2 pb-1 text-sm font-semibold transition-colors {{ request()->routeIs($item['route']) ? 'border-[#d52518] text-[#d52518]' : 'border-transparent text-[#6b7280] hover:text-[#185420]' }}">
+                            {{ $item['label'] }}
+                        </a>
+                    @endforeach
+                </nav>
+            </div>
 
-    {{-- MAIN --}}
-    <div class="flex-1 flex flex-col overflow-hidden">
-        <header class="bg-white border-b px-6 py-4 flex items-center justify-between">
-            <h1 class="text-xl font-bold text-gray-800">@yield('page-title', 'Admin Panel')</h1>
-            <span class="text-sm text-gray-500">{{ auth()->user()->name }}</span>
-        </header>
-
-        <div class="px-6 pt-4">
-            @if(session('success'))
-                <div class="bg-green-50 border border-green-200 text-green-700 rounded-xl px-4 py-3 mb-4">
-                    ✅ {{ session('success') }}
+            <div class="flex items-center gap-3">
+                <div class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#f96015] text-sm font-bold text-white shadow-sm">
+                    {{ $avatarInitial }}
                 </div>
-            @endif
-        </div>
 
-        <main class="flex-1 overflow-y-auto p-6">
-            @yield('content')
-        </main>
-    </div>
+                <form method="POST" action="{{ route('logout') }}" class="hidden sm:block">
+                    @csrf
+                    <button class="rounded-full border border-[#d8ccb6] px-3 py-1.5 text-xs font-semibold text-[#6b7280] transition hover:bg-white hover:text-[#d52518]">
+                        Logout
+                    </button>
+                </form>
+            </div>
+        </div>
+    </header>
+
+    <main class="relative mx-auto w-full max-w-7xl px-4 pb-8 pt-24 sm:px-6 lg:px-8">
+        <h1 class="mb-4 text-xl font-bold text-[#185420]">@yield('page-title', 'Admin Panel')</h1>
+
+        @if(session('success'))
+            <div class="mb-5 rounded-2xl border border-[#b4d86d] bg-[#ecf7ce] px-4 py-3 text-sm font-medium text-[#185420]">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @yield('content')
+    </main>
 </div>
 <x-flash />
+@stack('scripts')
 </body>
 </html>

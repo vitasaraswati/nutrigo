@@ -62,7 +62,7 @@ Route::middleware(['auth'])->prefix('api')->name('api.')->group(function () {
 // ── Admin Area ──────────────────────────────────────────
 Route::middleware(['auth','admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/',         [Admin\DashboardController::class,       'index'])->name('dashboard');
-    Route::resource('users',Admin\UserManagementController::class)->only(['index','show','destroy']);
+    Route::resource('users',Admin\UserManagementController::class)->only(['index','store','show','update','destroy']);
     Route::resource('foods',Admin\FoodController::class);
     Route::resource('articles', Admin\ArticleController::class);
 });
